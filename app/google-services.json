@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1067466799874",
+    "project_id": "daily-quest-457db",
+    "storage_bucket": "daily-quest-457db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067466799874:android:4528ad139361d0e14b601b",
+        "android_client_info": {
+          "package_name": "com.example.dailyquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ8Oasmjlg_IP8fctSWfPl7nU6tOlWpKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
