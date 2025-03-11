@@ -3,6 +3,7 @@ package com.example.dailyquest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.example.dailyquest.databinding.ActivityMainBinding
 import com.example.dailyquest.fragment.*
 
@@ -14,14 +15,15 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
     private lateinit var title: TextView
+    private var userId: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        userId = intent.getStringExtra("USER_ID")
         setBottomNavigationView()
         if (savedInstanceState == null) { //앱 초기 실행기 기본화면 홈
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, HomeFragment()) // 프래그먼트를 명확하게 추가
-                .commit()
+            replaceFragment(HomeFragment())
             binding.bottomNavigationView.selectedItemId = R.id.fragment_home
         }
     }
@@ -37,11 +39,7 @@ class MainActivity : AppCompatActivity() {
                 else -> null
             }
             if (fragment != null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_container, fragment)
-                    .addToBackStack(null) //백 스택에 추가
-                    .commit()
-
+                replaceFragment(fragment)
                 title.text = when (fragment) {
                     is HomeFragment -> fragment.fragmentTitle
                     is SearchFragment -> fragment.fragmentTitle
@@ -54,5 +52,17 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+
+    //`userId`를 모든 프래그먼트에 자동으로 전달하는 메서드
+    private fun replaceFragment(fragment: Fragment) {
+        val bundle = Bundle()
+        bundle.putString("USER_ID", userId)
+        fragment.arguments = bundle
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

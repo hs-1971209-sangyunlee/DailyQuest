@@ -44,10 +44,14 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // 로그인 성공 -> 메인 액티비티로 이동
-                        val intent = Intent(this, MainActivity::class.java)
-                        intent.putExtra("USER_ID", id)
-                        startActivity(intent)
-                        finish() // 로그인 액티비티 종료
+                        val user = FirebaseAuth.getInstance().currentUser
+                        if(user != null){
+                            val uid = user.uid
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.putExtra("USER_ID", uid)
+                            startActivity(intent)
+                            finish() // 로그인 액티비티 종료
+                        }
                     } else {
                         // 로그인 실패 시 예외 메시지 확인
                         val errorMessage = when (task.exception) {
