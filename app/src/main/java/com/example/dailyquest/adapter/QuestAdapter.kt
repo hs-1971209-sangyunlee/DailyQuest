@@ -9,15 +9,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dailyquest.R
 import com.example.dailyquest.model.Quest
 
-class QuestAdapter(private val questList: List<Quest>) :
+class QuestAdapter(private val questList: List<Quest>, private val onQuestClicked: (Quest) -> Unit) :
     RecyclerView.Adapter<QuestAdapter.QuestViewHolder>() {
 
-    class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val category: TextView = view.findViewById(R.id.quest_list_category)
-        val title: TextView = view.findViewById(R.id.quest_list_title)
-        val period: TextView = view.findViewById(R.id.quest_list_period)
-        val xp: TextView = view.findViewById(R.id.quest_list_xp)
-        val image: ImageView = view.findViewById(R.id.quest_list_circle)
+    //questList를 사용하기 위해 inner class로 생성
+    inner class QuestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val category: TextView = itemView.findViewById(R.id.quest_list_category)
+        val title: TextView = itemView.findViewById(R.id.quest_list_title)
+        val period: TextView = itemView.findViewById(R.id.quest_list_period)
+        val xp: TextView = itemView.findViewById(R.id.quest_list_xp)
+        val image: ImageView = itemView.findViewById(R.id.quest_list_circle)
+
+        fun bind(quest: Quest) {
+            category.text = quest.category
+            title.text = quest.title
+            period.text = "~" + quest.period
+            xp.text = "${quest.xp}xp"
+            image.setImageResource(R.drawable.icon_blue_circle)
+            itemView.setOnClickListener {
+                onQuestClicked(quest)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestViewHolder {
@@ -27,12 +39,7 @@ class QuestAdapter(private val questList: List<Quest>) :
     }
 
     override fun onBindViewHolder(holder: QuestViewHolder, position: Int) {
-        val quest = questList[position]
-        holder.category.text = quest.category
-        holder.title.text = quest.title
-        holder.period.text = quest.period
-        holder.xp.text = quest.xp.toString() + "xp"
-        holder.image.setImageResource(R.drawable.icon_blue_circle)
+        holder.bind(questList[position]);
     }
 
     override fun getItemCount() = questList.size

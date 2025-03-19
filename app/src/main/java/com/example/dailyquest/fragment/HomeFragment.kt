@@ -36,33 +36,23 @@ class HomeFragment : Fragment() {
         } else {
             Log.e("FirebaseAuth", "사용자가 로그인하지 않았습니다.")
         }
-        userId?.let { uid ->
-            Log.d("HomeFragment", "로그인한 사용자 ID: $uid")
 
-            getQuests(userId = uid, category = "일일퀘스트") { quests ->
-                quests.forEach {
-                    Log.d("Firebase", "퀘스트 제목: ${it.title}, 경험치: ${it.xp}")
-                }
-                questList.clear()
-                questList.addAll(quests)
-                questAdapter.notifyDataSetChanged() // UI 업데이트
-            }
-        } ?: Log.e("HomeFragment", "userId가 null입니다.")
-
+        // RecyclerView 설정
         questRecyclerView = view.findViewById(R.id.questRecyclerView)
         questRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // 더미 데이터 추가 (Firebase 연동 가능)
-        questList.addAll(
-            listOf(
-                Quest("일일 퀘스트", "물 마시기", "~2025.02.27", 500),
-                Quest("주간 퀘스트", "운동하기", "~2025.03.03", 1000),
-                Quest("월간 퀘스트", "책 3권 읽기", "~2025.03.31", 2000)
-            )
-        )
-
-        questAdapter = QuestAdapter(questList)
+        //어댑터 초기화
+        questAdapter = QuestAdapter(questList) { selectedQuest ->
+            showQuestActionDialog(selectedQuest) //아이템 클릭 시 다이얼로그 표시
+        }
         questRecyclerView.adapter = questAdapter
+
+        //Firestore에서 퀘스트 가져오기
+        userId?.let { uid ->
+            Log.d("HomeFragment", "로그인한 사용자 ID: $uid")
+            getQuests(userId = uid, category = "일일퀘스트")
+        } ?: Log.e("HomeFragment", "userId가 null입니다.")
+
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,15 +61,72 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun getQuests(userId: String, category: String, onResult: (List<Quest>) -> Unit) {
+    fun getQuests(userId: String, category: String) {
         val db = FirebaseFirestore.getInstance()
         db.collection("uid").document(userId)
             .collection(category)
             .get()
             .addOnSuccessListener { result ->
                 val quests = result.documents.mapNotNull { it.toObject(Quest::class.java)!! }
-                onResult(quests)
+                questList.clear()
+                questList.addAll(quests)
+                questAdapter.notifyDataSetChanged() // UI 업데이트
             }
             .addOnFailureListener { e -> Log.w("Firebase", "데이터 가져오기 실패", e) }
+    }
+
+    // ✅ 모달창 띄우는 함수
+    private fun showQuestActionDialog(quest: Quest) {
+        QuestActionDialogFragment(
+            onEdit = { editQuest(quest) },
+            onDelete = { deleteQuest(quest) },
+            onComplete = { completeQuest(quest) }
+        ).show(parentFragmentManager, "QuestActionDialog")
+    }
+
+    // ✅ 퀘스트 수정 기능 (Firestore 업데이트)
+    private fun editQuest(quest: Quest) {
+        val newTitle = "수정된 퀘스트 제목" // 🔹 수정된 제목 (예시)
+        userId?.let { uid ->
+            val db = FirebaseFirestore.getInstance()
+            db.collection("uid").document(uid)
+                .collection(quest.category).document(quest.id)
+                .update("title", newTitle)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "퀘스트 수정 완료!")
+                    getQuests(userId = uid, category = "일일퀘스트")
+                }
+                .addOnFailureListener { e -> Log.e("Firestore", "퀘스트 수정 실패", e) }
+        }
+    }
+
+    // ✅ 퀘스트 삭제 기능 (Firestore에서 제거)
+    private fun deleteQuest(quest: Quest) {
+        userId?.let { uid ->
+            val db = FirebaseFirestore.getInstance()
+            db.collection("uid").document(uid)
+                .collection(quest.category).document(quest.id)
+                .delete()
+                .addOnSuccessListener {
+                    Log.d("Firestore", "퀘스트 삭제 완료!")
+                    getQuests(userId = uid, category = "일일퀘스트")
+                }
+                .addOnFailureListener { e -> Log.e("Firestore", "퀘스트 삭제 실패", e) }
+        }
+    }
+
+    // ✅ 퀘스트 완료 기능 (Firestore에 completed 업데이트)
+    private fun completeQuest(quest: Quest) {
+        userId?.let { uid ->
+            val db = FirebaseFirestore.getInstance()
+            db.collection("uid").document(uid)
+                .collection(quest.category).document(quest.id)
+                .update("completed", true)
+                .addOnSuccessListener {
+                    Log.d("Firestore", "퀘스트 완료!")
+                    getQuests(userId = uid, category = "일일퀘스트")
+                }
+                .addOnFailureListener { e -> Log.e("Firestore", "퀘스트 완료 실패", e) }
+        }
     }
 }

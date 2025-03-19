@@ -87,20 +87,22 @@ class AddFragment : Fragment() {
     }
 
     private fun savaQuestToFireStore() {
+        val uniqueId = UUID.randomUUID().toString()
         val title = "테스트"
         val category = "일일퀘스트"
         val xp = 500
 
         // ✅ Firestore에 저장할 데이터 객체
         val questData = hashMapOf(
+            "id" to uniqueId,
             "category" to category,
             "title" to title,
             "xp" to xp,
-            "period" to "~"+deadline.text,
+            "period" to deadline.text,
             "completed" to false
         )
 
-        val uniqueId = UUID.randomUUID().toString()
+
         val db = FirebaseFirestore.getInstance()
         // ✅ Firestore 저장 (uid > 사용자id > 일일퀘스트 > title)
         userId?.let {
