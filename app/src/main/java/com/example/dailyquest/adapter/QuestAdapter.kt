@@ -19,7 +19,7 @@ class QuestAdapter(private val questList: List<Quest>, private val onQuestClicke
         val period: TextView = itemView.findViewById(R.id.quest_list_period)
         val xp: TextView = itemView.findViewById(R.id.quest_list_xp)
         val image: ImageView = itemView.findViewById(R.id.quest_list_circle)
-
+        val completedStampImageView: ImageView = itemView.findViewById(R.id.completedImageView)
         fun bind(quest: Quest) {
             category.text = quest.category
             title.text = quest.title
@@ -29,6 +29,8 @@ class QuestAdapter(private val questList: List<Quest>, private val onQuestClicke
             itemView.setOnClickListener {
                 onQuestClicked(quest)
             }
+            if(quest.completed) completedStampImageView.setImageResource(R.drawable.completed_stamp)
+            else completedStampImageView.setImageDrawable(null)
         }
     }
 

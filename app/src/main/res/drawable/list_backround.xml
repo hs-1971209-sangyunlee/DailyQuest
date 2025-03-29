@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+
+    <!-- ✅ 둥근 모서리 배경 포함 -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="10dp"/>
+            <solid android:color="#FFFFFF"/>
+            <stroke android:width="5dp" android:color="#CCCCCC"/>
+        </shape>
+    </item>
+
+</ripple>
+
+

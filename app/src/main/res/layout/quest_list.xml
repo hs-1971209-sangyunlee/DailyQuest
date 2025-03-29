@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#F4F3EE">
+    android:background="#FFFFFF">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -13,7 +13,9 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:background="#FFFFFF"
+        android:descendantFocusability="afterDescendants"
+        android:background="@drawable/list_backround"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -80,6 +82,16 @@
             app:layout_constraintEnd_toEndOf="@+id/quest_list_circle"
             app:layout_constraintStart_toStartOf="@+id/quest_list_circle"
             app:layout_constraintTop_toTopOf="@+id/quest_list_circle" />
+
+        <ImageView
+            android:id="@+id/completedImageView"
+            android:layout_width="77dp"
+            android:layout_height="75dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/completed_stamp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
